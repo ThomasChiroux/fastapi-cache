@@ -1,6 +1,8 @@
 from functools import wraps
 from typing import Callable, Optional, Type
 
+from loguru import logger
+
 from fastapi_cache import FastAPICache
 from fastapi_cache.coder import Coder
 
@@ -33,7 +35,7 @@ def cache(
                 request and request.headers.get("Cache-Control") == "no-store"
             ) or not FastAPICache.get_enable():
                 return await func(*args, **kwargs)
-
+            logger.debug("Inner fastapi cache decorator: request: {}, reponse: {}", request, response)
             coder = coder or FastAPICache.get_coder()
             expire = expire or FastAPICache.get_expire()
             key_builder = key_builder or FastAPICache.get_key_builder()
